@@ -1,10 +1,10 @@
 import {app, BrowserWindow} from 'electron';
 import path from 'path';
-import { exec } from 'child_process';
+//import { exec } from 'child_process';
 
-
+/*
 const executeJar = ()=> {
-    const jarPath = path.join(__dirname , 'target/App.jar');
+    const jarPath = path.join(app.getAppPath() , 'target','App.jar');
 
     exec(`start java -jar ${jarPath}`, (error, stdout, stderr) => {
         if (error) {
@@ -18,9 +18,9 @@ const executeJar = ()=> {
         console.log(`stdout: ${stdout}`);
     });
 }
-
+*/
 app.on("ready", () => {
-    executeJar();
+  //  executeJar(); it is for an executable before program
     const mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.loadFile(path.join(app.getAppPath()) + "/dist-react/index.html"); //producción no?
 })
