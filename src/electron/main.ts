@@ -1,26 +1,43 @@
 import {app, BrowserWindow} from 'electron';
 import path from 'path';
-//import { exec } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 
-/*
+let child : ChildProcessWithoutNullStreams;
+const JAR= "App.jar";
+
 const executeJar = ()=> {
-    const jarPath = path.join(app.getAppPath() , 'target','App.jar');
+    const jarPath = path.join(app.getAppPath(), '..', JAR);
 
-    exec(`start java -jar ${jarPath}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error al ejecutar el .jar: ${error}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
+    child = spawn('java', ['-jar', jarPath, '']);
+
+
+    child.on('error', (err) => {
+        console.error('Error ejecutando el archivo .jar:', err);
+    });
+
+    child.on('close', (code) => {
+        console.log("el jarPath es: ",jarPath)
+        console.log(`Proceso hijo terminado con código ${code}`);
     });
 }
-*/
-app.on("ready", () => {
-  //  executeJar(); it is for an executable before program
+
+const createWindow = () => {
     const mainWindow = new BrowserWindow({width: 800, height: 600});
-    mainWindow.loadFile(path.join(app.getAppPath()) + "/dist-react/index.html"); //producción no?
+    mainWindow.loadFile(path.join(app.getAppPath()) + "/dist-react/index.html");
+}
+
+app.on("ready", () => {
+    executeJar();
+    createWindow();
 })
+app.on('window-all-closed', () => {
+    if (child) {
+        child.kill(); 
+    }
+});
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
+});
